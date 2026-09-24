@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مفتاح — تنظيم حياتك</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#08090d;--panel:#11131a;--panel2:#171a23;--text:#f7f8fb;--muted:#9298a8;--line:#252936;--accent:#7c5cff;--accent2:#19d3ae;--danger:#ff5d73;--gold:#f4c95d}
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:radial-gradient(circle at 15% 0,#1b1640 0,transparent 34%),var(--bg);color:var(--text);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
+#auth{min-height:100vh;display:grid;place-items:center;padding:24px}.auth-card{width:min(440px,100%);background:rgba(17,19,26,.94);border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:0 25px 80px #0008}.logo{font-size:34px;font-weight:900}.logo span{color:var(--accent)}.sub{color:var(--muted);margin:8px 0 25px}.tabs{display:flex;background:#0d0f15;border-radius:14px;padding:4px;margin-bottom:18px}.tabs button{flex:1;padding:11px;border-radius:10px;background:transparent;color:var(--muted)}.tabs .active{background:var(--panel2);color:#fff}.field{margin:11px 0}.field label{display:block;color:#c5c9d4;font-size:13px;margin-bottom:7px}.field input,.field select{width:100%;padding:13px 14px;border:1px solid var(--line);background:#0c0e14;color:#fff;border-radius:13px;outline:none}.field input:focus{border-color:var(--accent)}.primary{width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#a06bff);color:#fff;font-weight:800;margin-top:10px}.msg{min-height:22px;color:#ffb5c0;font-size:13px;margin-top:12px}.app{display:flex;min-height:100vh}.side{width:250px;background:rgba(12,14,20,.9);border-left:1px solid var(--line);padding:22px;position:fixed;right:0;top:0;bottom:0}.side nav{margin-top:30px;display:grid;gap:7px}.nav{padding:13px 15px;border-radius:13px;background:transparent;color:#aeb3c1;text-align:right}.nav:hover,.nav.active{background:#1b1e29;color:#fff}.main{margin-right:250px;width:calc(100% - 250px);padding:25px;max-width:1400px}.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:22px}.top h1{margin:0;font-size:28px}.pill{padding:8px 11px;border-radius:999px;background:#1c1f29;color:#cdd1dc;font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:rgba(17,19,26,.9);border:1px solid var(--line);border-radius:20px;padding:19px}.stat .num{font-size:30px;font-weight:900;margin-top:8px}.muted{color:var(--muted);font-size:13px}.layout{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-top:16px}.card h2{font-size:18px;margin:0 0 16px}.task-add{display:grid;grid-template-columns:1fr 130px 110px;gap:8px}.task-add input,.task-add select{padding:12px;border-radius:12px;border:1px solid var(--line);background:#0c0e14;color:#fff}.task{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.task:last-child{border-bottom:0}.check{width:22px;height:22px;border-radius:7px;border:1px solid #4b5160;background:#0c0e14;display:grid;place-items:center;color:#fff}.check.done{background:var(--accent);border-color:var(--accent)}.task-title{flex:1}.done-text{text-decoration:line-through;color:#777d8d}.priority{font-size:11px;padding:5px 8px;border-radius:999px;background:#232631}.delete{background:transparent;color:#858b99;font-size:18px}.delete:hover{color:var(--danger)}.xpbar{height:10px;background:#252936;border-radius:99px;overflow:hidden;margin:12px 0}.xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0}.hero{background:linear-gradient(135deg,#19152f,#101a20);border-color:#302b51}.pro{background:linear-gradient(135deg,#2b203a,#161a22);border-color:#5b4675}.pro button{padding:10px 13px;border-radius:11px;background:var(--gold);font-weight:900}.settings{display:grid;gap:12px}.danger{background:#31141b;color:#ff9aaa;padding:11px 13px;border-radius:11px}.admin-table{width:100%;border-collapse:collapse}.admin-table th,.admin-table td{padding:11px;border-bottom:1px solid var(--line);text-align:right;font-size:13px}.mobilebar{display:none}.toast{position:fixed;left:20px;bottom:20px;background:#171a23;border:1px solid var(--line);padding:13px 16px;border-radius:13px;z-index:50;box-shadow:0 10px 40px #0008}
+@media(max-width:900px){.side{display:none}.main{margin-right:0;width:100%;padding:16px;padding-bottom:82px}.grid{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.task-add{grid-template-columns:1fr 1fr}.task-add button{grid-column:1/-1}.mobilebar{display:flex;position:fixed;bottom:0;right:0;left:0;background:#0d0f15;border-top:1px solid var(--line);z-index:30;justify-content:space-around;padding:7px}.mobilebar button{background:transparent;color:#aeb3c1;padding:9px;font-size:11px}.mobilebar button.active{color:#fff}}
+</style>
+</head>
+<body>
+
+<section id="auth">
+  <div class="auth-card">
+    <div class="logo">مفتاح<span>.</span></div>
+    <div class="sub">مكان واحد ترتب فيه يومك، مهامك وأهدافك.</div>
+    <div class="tabs">
+      <button id="loginTab" class="active" onclick="setAuthMode('login')">تسجيل الدخول</button>
+      <button id="signupTab" onclick="setAuthMode('signup')">حساب جديد</button>
+    </div>
+    <div id="nameField" class="field hidden"><label>الاسم</label><input id="name" placeholder="اسمك"></div>
+    <div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" placeholder="name@example.com"></div>
+    <div class="field"><label>كلمة المرور</label><input id="password" type="password" placeholder="6 أحرف أو أكثر"></div>
+    <div id="roleField" class="field hidden"><label>طريقة استخدامك لمفتاح</label><select id="role"><option value="normal">استخدام شخصي</option><option value="student">طالب</option></select></div>
+    <button class="primary" onclick="submitAuth()">دخول</button>
+    <div id="authMsg" class="msg"></div>
+  </div>
+</section>
+
+<section id="app" class="app hidden">
+  <aside class="side">
+    <div class="logo">مفتاح<span>.</span></div>
+    <div class="sub" id="sideUser">مرحباً</div>
+    <nav>
+      <button class="nav active" data-page="dashboard" onclick="showPage('dashboard')">🏠 الرئيسية</button>
+      <button class="nav" data-page="tasks" onclick="showPage('tasks')">✓ المهام</button>
+      <button class="nav" data-page="time" onclick="showPage('time')">⏱ تنظيم الوقت</button>
+      <button class="nav" data-page="xp" onclick="showPage('xp')">⭐ XP والإنجازات</button>
+      <button class="nav" data-page="settings" onclick="showPage('settings')">⚙ الإعدادات</button>
+      <button class="nav hidden" id="adminNav" data-page="admin" onclick="showPage('admin')">🛡 الإدارة</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div><h1 id="pageTitle">الرئيسية</h1><div class="muted" id="welcome"></div></div>
+      <div class="pill" id="planPill">FREE</div>
+    </div>
+
+    <div id="dashboard" class="page">
+      <div class="card hero">
+        <div class="muted">مستواك الحالي</div>
+        <h2 id="levelText">المستوى 1</h2>
+        <div class="xpbar"><i id="xpFill"></i></div>
+        <div class="muted" id="xpText">0 / 100 XP</div>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <div class="card stat"><div class="muted">مهام اليوم</div><div class="num" id="todayTasks">0</div></div>
+        <div class="card stat"><div class="muted">تم إنجازها</div><div class="num" id="doneTasks">0</div></div>
+        <div class="card stat"><div class="muted">XP</div><div class="num" id="xpNum">0</div></div>
+        <div class="card stat"><div class="muted">المستوى</div><div class="num" id="levelNum">1</div></div>
+      </div>
+      <div class="layout">
+        <div class="card"><h2>مهامك</h2><div id="dashTasks"></div></div>
+        <div class="card pro"><h2>👑 مفتاح Pro</h2><p class="muted">افتح مزايا إضافية عند تفعيل الاشتراك.</p><button onclick="upgrade()">ترقية إلى Pro</button></div>
+      </div>
+    </div>
+
+    <div id="tasks" class="page hidden">
+      <div class="card">
+        <h2>إضافة مهمة</h2>
+        <div class="task-add">
+          <input id="taskInput" placeholder="مثلاً: إنهاء المشروع">
+          <select id="priority"><option value="low">منخفضة</option><option value="medium" selected>متوسطة</option><option value="high">عالية</option></select>
+          <button class="primary" style="margin:0" onclick="addTask()">إضافة</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px"><h2>كل المهام</h2><div id="taskList"></div></div>
+    </div>
+
+    <div id="time" class="page hidden">
+      <div class="layout">
+        <div class="card">
+          <h2>⏱ مؤقت التركيز</h2>
+          <div style="font-size:64px;font-weight:900;text-align:center;margin:25px 0" id="timer">25:00</div>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <button class="primary" style="width:auto" onclick="startTimer()">ابدأ</button>
+            <button class="danger" onclick="resetTimer()">إعادة</button>
+          </div>
+          <p class="muted" style="text-align:center">جلسة تركيز مكتملة تمنحك +15 XP.</p>
+        </div>
+        <div class="card"><h2>خطة سريعة</h2><p class="muted">اكتب مهامك ثم استخدم المؤقت للعمل على مهمة واحدة في كل مرة.</p></div>
+      </div>
+    </div>
+
+    <div id="xp" class="page hidden">
+      <div class="card hero"><h2>⭐ مركز الإنجازات</h2><p class="muted">كل مهمة مكتملة = +10 XP. كل جلسة تركيز كاملة = +15 XP.</p><div class="xpbar"><i id="xpFill2"></i></div><b id="xpText2">0 / 100 XP</b></div>
+      <div class="grid" style="margin-top:16px">
+        <div class="card"><div class="muted">🏁 أول مهمة</div><h3>ابدأ طريقك</h3></div>
+        <div class="card"><div class="muted">🔥 الاستمرارية</div><h3>اجمع XP كل يوم</h3></div>
+        <div class="card"><div class="muted">👑 Pro</div><h3>افتح المزايا</h3></div>
+        <div class="card"><div class="muted">🚀 مستوى جديد</div><h3>كل 100 XP</h3></div>
+      </div>
+    </div>
+
+    <div id="settings" class="page hidden">
+      <div class="card settings">
+        <h2>الإعدادات</h2>
+        <div><b id="profileName">-</b><div class="muted" id="profileEmail">-</div></div>
+        <div class="pill" id="profileRole">-</div>
+        <button class="danger" onclick="logout()">تسجيل الخروج</button>
+      </div>
+    </div>
+
+    <div id="admin" class="page hidden">
+      <div class="grid">
+        <div class="card stat"><div class="muted">المستخدمون</div><div class="num" id="adminUsers">0</div></div>
+        <div class="card stat"><div class="muted">Pro</div><div class="num" id="adminPro">0</div></div>
+        <div class="card stat"><div class="muted">XP إجمالي</div><div class="num" id="adminXp">0</div></div>
+        <div class="card stat"><div class="muted">المهام</div><div class="num" id="adminTasks">0</div></div>
+      </div>
+      <div class="card" style="margin-top:16px"><h2>المستخدمون</h2><div style="overflow:auto"><table class="admin-table"><thead><tr><th>الاسم</th><th>الخطة</th><th>الدور</th><th>XP</th></tr></thead><tbody id="adminRows"></tbody></table></div></div>
+    </div>
+  </main>
+
+  <div class="mobilebar">
+    <button onclick="showPage('dashboard')">🏠<br>الرئيسية</button>
+    <button onclick="showPage('tasks')">✓<br>المهام</button>
+    <button onclick="showPage('time')">⏱<br>الوقت</button>
+    <button onclick="showPage('xp')">⭐<br>XP</button>
+    <button onclick="showPage('settings')">⚙<br>إعدادات</button>
+  </div>
+</section>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+/* ====== 1) ضع بيانات Supabase هنا ====== */
+const SUPABASE_URL = "https://qtricouqcdeponosxtla.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_KV50THvpo-_f68k2BWpCjg_IzY6jVDK";
+/* لا تضع service_role key هنا أبداً. استخدم publishable/anon key فقط. */
+
+const client = (SUPABASE_URL.startsWith("http") && !SUPABASE_PUBLISHABLE_KEY.startsWith("YOUR_"))
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+  : null;
+
+let mode="login", user=null, profile=null, tasks=[], timerSeconds=1500, timerInterval=null;
+
+function setAuthMode(m){
+  mode=m;
+  document.getElementById("loginTab").classList.toggle("active",m==="login");
+  document.getElementById("signupTab").classList.toggle("active",m==="signup");
+  document.getElementById("nameField").classList.toggle("hidden",m!=="signup");
+  document.getElementById("roleField").classList.toggle("hidden",m!=="signup");
+  document.querySelector("#auth .primary").textContent=m==="login"?"دخول":"إنشاء الحساب";
+  document.getElementById("authMsg").textContent="";
+}
+function msg(t){document.getElementById("authMsg").textContent=t}
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.remove("hidden");setTimeout(()=>x.classList.add("hidden"),2500)}
+function requireClient(){if(!client){msg("لسه موصلناش Supabase. حط URL و Publishable Key في الكود أولاً.");return false}return true}
+
+async function submitAuth(){
+  if(!requireClient())return;
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+  if(!email||password.length<6){msg("اكتب البريد وكلمة مرور 6 أحرف على الأقل.");return}
+  msg("جاري التنفيذ...");
+  if(mode==="signup"){
+    const name=document.getElementById("name").value.trim()||"مستخدم";
+    const role=document.getElementById("role").value;
+    const {data,error}=await client.auth.signUp({email,password,options:{data:{name,role}}});
+    if(error){msg(error.message);return}
+    if(!data.session){msg("تم إنشاء الحساب. افتح رسالة التأكيد في بريدك ثم سجّل الدخول.");return}
+    msg(""); await boot();
+  }else{
+    const {error}=await client.auth.signInWithPassword({email,password});
+    if(error){msg(error.message);return}
+    msg(""); await boot();
+  }
+}
+
+async function boot(){
+  const {data:{user:u}}=await client.auth.getUser();
+  if(!u){showAuth();return}
+  user=u;
+  const {data:p,error}=await client.from("profiles").select("*").eq("id",u.id).single();
+  if(error){msg("تعذر تحميل الحساب. تأكد أنك شغلت SQL الخاص بمفتاح.");return}
+  profile=p;
+  const {data:t,error:te}=await client.from("tasks").select("*").eq("user_id",u.id).order("created_at",{ascending:false});
+  if(te){toast("تعذر تحميل المهام");return}
+  tasks=t||[];
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  document.getElementById("sideUser").textContent="مرحباً، "+(profile.name||"مستخدم");
+  document.getElementById("welcome").textContent=(profile.role==="student"?"ركز خطوة بخطوة، وكل إنجاز يقربك.":"نظّم يومك وأنجز المهم أولاً.");
+  document.getElementById("profileName").textContent=profile.name||"مستخدم";
+  document.getElementById("profileEmail").textContent=user.email||"";
+  document.getElementById("profileRole").textContent=profile.role==="student"?"🎓 طالب":"👤 استخدام شخصي";
+  const isPro=profile.plan==="pro" && (!profile.pro_until || new Date(profile.pro_until)>new Date());
+  document.getElementById("planPill").textContent=isPro?"PRO":"FREE";
+  document.getElementById("adminNav").classList.toggle("hidden",profile.role!=="admin");
+  render();
+}
+function showAuth(){document.getElementById("app").classList.add("hidden");document.getElementById("auth").classList.remove("hidden")}
+async function logout(){if(client)await client.auth.signOut();user=null;profile=null;tasks=[];showAuth();setAuthMode("login")}
+function showPage(id){
+  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+  document.getElementById(id)?.classList.remove("hidden");
+  document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.page===id));
+  const titles={dashboard:"الرئيسية",tasks:"المهام",time:"تنظيم الوقت",xp:"XP والإنجازات",settings:"الإعدادات",admin:"لوحة الإدارة"};
+  document.getElementById("pageTitle").textContent=titles[id]||"مفتاح";
+  if(id==="admin")loadAdmin();
+}
+function render(){
+  const xp=Number(profile.xp||0), level=Math.floor(xp/100)+1, progress=xp%100;
+  document.getElementById("xpNum").textContent=xp;document.getElementById("levelNum").textContent=level;document.getElementById("levelText").textContent="المستوى "+level;
+  document.getElementById("xpText").textContent=progress+" / 100 XP";document.getElementById("xpText2").textContent=progress+" / 100 XP";
+  document.getElementById("xpFill").style.width=progress+"%";document.getElementById("xpFill2").style.width=progress+"%";
+  const done=tasks.filter(x=>x.completed).length;document.getElementById("todayTasks").textContent=tasks.length;document.getElementById("doneTasks").textContent=done;
+  renderTasks("taskList");renderTasks("dashTasks");
+}
+function renderTasks(id){
+  const el=document.getElementById(id);
+  if(!tasks.length){el.innerHTML='<div class="muted">مفيش مهام لسه. أضف أول مهمة 👌</div>';return}
+  el.innerHTML=tasks.map(t=>`<div class="task">
+    <button class="check ${t.completed?"done":""}" onclick="toggleTask('${t.id}',${!t.completed})">${t.completed?"✓":""}</button>
+    <div class="task-title ${t.completed?"done-text":""}">${esc(t.title)}</div>
+    <span class="priority">${priorityName(t.priority)}</span>
+    <button class="delete" onclick="deleteTask('${t.id}')">×</button>
+  </div>`).join("");
+}
+function priorityName(p){return p==="high"?"عالية":p==="low"?"منخفضة":"متوسطة"}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+async function addTask(){
+  if(!client)return;
+  const input=document.getElementById("taskInput"), title=input.value.trim(), priority=document.getElementById("priority").value;
+  if(!title)return;
+  const {data,error}=await client.from("tasks").insert({user_id:user.id,title,priority}).select().single();
+  if(error){toast(error.message);return}
+  tasks.unshift(data);input.value="";render();toast("تمت إضافة المهمة");
+}
+async function toggleTask(id,completed){
+  const {data,error}=await client.rpc("set_task_completed",{p_task_id:id,p_completed:completed});
+  if(error){toast(error.message);return}
+  const idx=tasks.findIndex(x=>String(x.id)===String(id));if(idx>=0)tasks[idx].completed=completed;
+  if(completed){profile.xp=Number(profile.xp||0)+10;toast("+10 XP ⭐")}
+  else{profile.xp=Math.max(0,Number(profile.xp||0)-10)}
+  render();
+}
+async function deleteTask(id){
+  const {error}=await client.from("tasks").delete().eq("id",id);
+  if(error){toast(error.message);return}
+  tasks=tasks.filter(x=>String(x.id)!==String(id));render();
+}
+
+function startTimer(){
+  if(timerInterval)return;
+  timerInterval=setInterval(async()=>{
+    timerSeconds--;updateTimer();
+    if(timerSeconds<=0){
+      clearInterval(timerInterval);timerInterval=null;timerSeconds=1500;updateTimer();
+      const {data,error}=await client.rpc("add_focus_xp",{p_amount:15});
+      if(!error){profile.xp=Number(data);render();toast("+15 XP — جلسة تركيز مكتملة 🔥")}
+    }
+  },1000);
+}
+function resetTimer(){clearInterval(timerInterval);timerInterval=null;timerSeconds=1500;updateTimer()}
+function updateTimer(){const m=Math.floor(timerSeconds/60),s=timerSeconds%60;document.getElementById("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+async function upgrade(){
+  const isPro=profile.plan==="pro" && (!profile.pro_until || new Date(profile.pro_until)>new Date());
+  if(isPro){toast("أنت بالفعل مشترك Pro 👑");return}
+  toast("زر الدفع جاهز للربط ببوابة دفع في المرحلة التالية.");
+}
+
+async function loadAdmin(){
+  if(profile.role!=="admin")return;
+  const {data:p,error}=await client.from("profiles").select("id,name,role,plan,pro_until,xp").order("created_at",{ascending:false});
+  if(error){toast(error.message);return}
+  const {count:tc}=await client.from("tasks").select("*",{count:"exact",head:true});
+  const pro=(p||[]).filter(x=>x.plan==="pro").length;
+  document.getElementById("adminUsers").textContent=(p||[]).length;
+  document.getElementById("adminPro").textContent=pro;
+  document.getElementById("adminXp").textContent=(p||[]).reduce((a,x)=>a+Number(x.xp||0),0);
+  document.getElementById("adminTasks").textContent=tc||0;
+  document.getElementById("adminRows").innerHTML=(p||[]).map(x=>`<tr><td>${esc(x.name||"-")}</td><td>${x.plan==="pro"?"PRO":"FREE"}</td><td>${x.role}</td><td>${x.xp||0}</td></tr>`).join("");
+}
+
+if(client)client.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")showAuth()});
+if(client)boot();
+</script>
+</body>
+</html>
