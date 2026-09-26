@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>مِفتاح | نظّم وقتك وحقق هدفك</title>
+  <meta name="description" content="مِفتاح - تطبيق لتنظيم المهام والوقت">
+  <style>
+    :root{
+      --bg:#07101d;--panel:#0d1929;--panel2:#111f32;--line:#1d3048;
+      --text:#edf5ff;--muted:#91a4bc;--blue:#2f8cff;--blue2:#1769d0;
+      --green:#2ecc8a;--red:#ff5d6c;--yellow:#f5c451;--shadow:0 16px 45px #0008;
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at 10% 0%,#12325a55,transparent 32%),var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .app{min-height:100vh}
+    .topbar{height:70px;border-bottom:1px solid var(--line);background:#07101de8;backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:20}
+    .brand{font-size:25px;font-weight:900}.brand span{color:var(--blue)}
+    .top-actions{display:flex;gap:10px;align-items:center}
+    .layout{display:flex;min-height:calc(100vh - 70px)}
+    .sidebar{width:245px;border-left:1px solid var(--line);padding:18px;background:#091524}
+    .nav{display:grid;gap:8px}
+    .nav button{background:transparent;color:var(--muted);border:1px solid transparent;border-radius:14px;padding:13px;text-align:right}
+    .nav button.active,.nav button:hover{background:var(--panel2);border-color:var(--line);color:var(--text)}
+    .content{flex:1;padding:28px;max-width:1400px;margin:auto;width:100%}
+    .view{display:none}.view.active{display:block}
+    h1{margin:0 0 8px;font-size:30px}h2{margin:0 0 16px}
+    .muted{color:var(--muted)}.small{font-size:13px}
+    .grid{display:grid;gap:16px}.grid4{grid-template-columns:repeat(4,1fr)}.grid3{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:repeat(2,1fr)}
+    .card{background:linear-gradient(145deg,var(--panel),#0a1625);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+    .stat .num{font-size:30px;font-weight:900;margin-top:8px}.stat .label{color:var(--muted)}
+    .btn{border:0;border-radius:13px;padding:11px 15px;color:white;background:var(--blue);font-weight:800}
+    .btn:hover{filter:brightness(1.1)}.btn.secondary{background:#17283e;border:1px solid var(--line)}
+    .btn.green{background:#17855c}.btn.red{background:#a72c3b}.btn.yellow{background:#8c6b19}
+    .input{width:100%;background:#091423;border:1px solid var(--line);color:var(--text);border-radius:13px;padding:12px;outline:none}
+    .input:focus{border-color:var(--blue)}
+    label{display:block;margin:12px 0 7px;color:#c8d6e8;font-size:14px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+    .task{display:flex;align-items:center;gap:12px;border:1px solid var(--line);padding:13px;border-radius:14px;background:#0a1727;margin-top:9px}
+    .task.done{opacity:.58}.task.done .task-title{text-decoration:line-through}
+    .check{width:20px;height:20px;accent-color:var(--blue)}
+    .badge{display:inline-flex;padding:5px 9px;border-radius:999px;background:#162942;color:#bcd9ff;font-size:12px}
+    .badge.pro{background:#4c3a0c;color:#ffd86d}.badge.admin{background:#183d37;color:#68e4ba}
+    .progress{height:10px;background:#142237;border-radius:999px;overflow:hidden}.progress>i{display:block;height:100%;background:var(--blue);width:0}
+    .timer{font-size:72px;font-weight:900;text-align:center;letter-spacing:2px;margin:22px 0}
+    .hero{padding:26px;border-radius:24px;background:linear-gradient(135deg,#0d2745,#0b1727);border:1px solid #23476d;margin-bottom:18px}
+    .hero strong{color:#62b1ff}
+    .notice{padding:12px;border-radius:13px;background:#0b1e31;border:1px solid var(--line);margin:10px 0}
+    .notice.ok{border-color:#1d6b50}.notice.err{border-color:#7a2935;color:#ffb8c0}
+    .table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:11px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+    .auth-screen{min-height:100vh;display:grid;place-items:center;padding:20px}
+    .auth-card{width:min(480px,100%);background:linear-gradient(145deg,#0d1b2d,#081320);border:1px solid var(--line);border-radius:25px;padding:28px;box-shadow:var(--shadow)}
+    .auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}
+    .auth-tabs button{padding:11px;border:1px solid var(--line);background:#0a1727;color:var(--muted);border-radius:12px}
+    .auth-tabs button.active{color:#fff;background:#12345b;border-color:#276db4}
+    .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.role{padding:13px;border:1px solid var(--line);border-radius:14px;background:#091423;color:#b9c8d9;text-align:center}
+    .role.selected{border-color:var(--blue);background:#0d2949;color:#fff}
+    .toast{position:fixed;left:20px;bottom:20px;z-index:100;padding:13px 16px;border-radius:14px;background:#101f31;border:1px solid var(--line);box-shadow:var(--shadow);max-width:360px}
+    .modal-bg{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:80;padding:20px}
+    .modal{width:min(520px,100%);background:#0c1827;border:1px solid var(--line);border-radius:22px;padding:22px}
+    .price{font-size:38px;font-weight:900}.price small{font-size:14px;color:var(--muted)}
+    @media(max-width:900px){.sidebar{width:80px}.sidebar .nav button{font-size:0;text-align:center}.sidebar .nav button::first-letter{font-size:20px}.content{padding:18px}.grid4,.grid3{grid-template-columns:repeat(2,1fr)}}
+    .mobile-menu-btn{display:none;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:20px;cursor:pointer}
+    .mobile-menu-backdrop{display:none}
+    @media(max-width:620px){.sidebar{display:block;position:fixed;top:0;right:-270px;width:250px;height:100vh;z-index:50;transition:right .2s ease;box-shadow:0 10px 40px rgba(0,0,0,.35)}.sidebar.open{right:0}.sidebar .nav button{font-size:15px;text-align:right}.content{padding:14px}.topbar{padding:0 12px}.timer{font-size:52px}.mobile-menu-btn{display:block}.mobile-menu-backdrop.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40}.brand{font-size:20px}.top-actions{gap:6px}.top-actions .muted{display:none}}
+  </style>
+<style id="mobile-menu-fix">@media(max-width:800px){#mobileMenuButton{display:flex!important;position:fixed!important;top:14px!important;right:14px!important;z-index:10001!important;align-items:center!important;justify-content:center!important;width:46px!important;height:46px!important;border-radius:14px!important}#mobileMenu{display:none!important;position:fixed!important;top:68px!important;right:12px!important;left:12px!important;z-index:10000!important}#mobileMenu.is-open{display:block!important}}</style></head>
+<body>
+<div id="toast" class="toast hidden"></div>
+
+<section id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="brand">مِفتاح <span>🔑</span></div>
+    <p class="muted">ذاكر أذكى. نظّم وقتك. حقق هدفك.</p>
+    <div class="auth-tabs">
+      <button id="tabLogin" class="active">تسجيل الدخول</button>
+      <button id="tabSignup">حساب جديد</button>
+    </div>
+
+    <div id="signupFields" class="hidden">
+      <label>الاسم</label>
+      <input id="nameInput" class="input" placeholder="اسمك">
+      <label>نوع الاستخدام</label>
+      <div class="role-grid">
+        <button class="role selected" data-role="student">🎓 أنا طالب</button>
+        <button class="role" data-role="normal">🧩 استخدام شخصي</button>
+      </div>
+    </div>
+
+    <label>البريد الإلكتروني</label>
+    <input id="emailInput" class="input" type="email" autocomplete="email" placeholder="example@email.com">
+    <label>كلمة المرور</label>
+    <input id="passwordInput" class="input" type="password" autocomplete="current-password" placeholder="6 أحرف على الأقل">
+
+    <button id="authBtn" class="btn" style="width:100%;margin-top:18px">دخول</button>
+    <div id="authMsg" class="notice hidden"></div>
+    <p class="muted small">بياناتك تُحفظ في Supabase، ولا تضع مفتاح service_role في الموقع.</p>
+  </div>
+</section>
+
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="فتح القائمة">☰</button>
+    <div class="brand">مِفتاح <span>🔑</span></div>
+    <div class="top-actions">
+      <span id="planBadge" class="badge">Free</span>
+      <span id="userNameTop" class="muted"></span>
+      <button id="logoutBtn" class="btn secondary">خروج</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="nav">
+        <button class="active" data-view="dashboard">🏠 الرئيسية</button>
+        <button data-view="tasks">✅ المهام</button>
+        <button data-view="timer">⏱️ المؤقت</button>
+        <button data-view="pro">⭐ Pro</button>
+        <button data-view="settings">⚙️ الإعدادات</button>
+        <button id="adminNav" class="hidden" data-view="admin">🛡️ الإدارة</button>
+      </nav>
+    </aside>
+    <div id="mobileMenuBackdrop" class="mobile-menu-backdrop"></div>
+
+    <main class="content">
+      <section id="view-dashboard" class="view active">
+        <div class="hero">
+          <h1 id="welcomeTitle">أهلاً 👋</h1>
+          <p id="welcomeText" class="muted">ابدأ بخطوة صغيرة النهارده.</p>
+        </div>
+        <div class="grid grid4">
+          <div class="card stat"><div class="label">XP</div><div id="xpStat" class="num">0</div></div>
+          <div class="card stat"><div class="label">المستوى</div><div id="levelStat" class="num">1</div></div>
+          <div class="card stat"><div class="label">المهام المكتملة</div><div id="doneStat" class="num">0</div></div>
+          <div class="card stat"><div class="label">المهام المتبقية</div><div id="leftStat" class="num">0</div></div>
+        </div>
+        <div class="grid grid2" style="margin-top:16px">
+          <div class="card">
+            <div class="row between"><h2>تقدم المستوى</h2><span id="levelText" class="muted small"></span></div>
+            <div class="progress"><i id="xpBar"></i></div>
+            <p class="muted small">كل مهمة مكتملة تضيف XP حسب نظام الموقع.</p>
+          </div>
+          <div class="card">
+            <h2>أسرع بداية</h2>
+            <p class="muted">أضف مهمة واحدة ثم شغّل جلسة تركيز 25 دقيقة.</p>
+            <div class="row"><button class="btn" id="quickTaskBtn">إضافة مهمة</button><button class="btn secondary" id="quickTimerBtn">ابدأ المؤقت</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-tasks" class="view">
+        <div class="row between">
+          <div><h1>المهام</h1><p class="muted">نظّم يومك خطوة بخطوة.</p></div>
+          <button class="btn" id="addTaskBtn">+ مهمة</button>
+        </div>
+        <div id="taskLimitNotice" class="notice hidden"></div>
+        <div class="card" style="margin-top:16px">
+          <div id="tasksList"></div>
+          <div id="emptyTasks" class="muted" style="text-align:center;padding:30px">مفيش مهام لسه.</div>
+        </div>
+      </section>
+
+      <section id="view-timer" class="view">
+        <h1>مؤقت التركيز</h1><p class="muted">25 دقيقة تركيز ثم راحة.</p>
+        <div class="card" style="max-width:700px;margin-top:18px">
+          <div id="timerDisplay" class="timer">25:00</div>
+          <div class="row" style="justify-content:center">
+            <button id="timerStart" class="btn green">ابدأ</button>
+            <button id="timerPause" class="btn secondary">إيقاف</button>
+            <button id="timerReset" class="btn secondary">إعادة</button>
+          </div>
+          <p id="timerStatus" class="muted" style="text-align:center;margin-top:15px">جلسة جديدة.</p>
+        </div>
+      </section>
+
+      <section id="view-pro" class="view">
+        <h1>مِفتاح Pro ⭐</h1>
+        <p class="muted">مزايا إضافية للمستخدمين الذين يريدون مساحة أكبر وتنظيم أقوى.</p>
+        <div class="grid grid2" style="margin-top:18px">
+          <div class="card">
+            <span class="badge pro">PRO</span>
+            <div class="price" style="margin-top:10px">50 <small>جنيه / 30 يوم</small></div>
+            <ul class="muted">
+              <li>مهام بدون حد الـFree</li>
+              <li>مزايا Pro داخل التطبيق</li>
+              <li>شارة Pro</li>
+              <li>صلاحية 30 يوم من وقت الموافقة</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>طلب الاشتراك</h2>
+            <div id="proStatusBox" class="notice">جاري التحميل...</div>
+            <div class="notice" style="margin:12px 0;border-color:rgba(96,165,250,.35)">
+              <strong>💳 الدفع عبر Vodafone Cash</strong><br>
+              حوّل <strong>50 جنيه</strong> إلى الرقم: <strong dir="ltr">01034968272</strong><br>
+              <span class="muted small">بعد التحويل، اكتب رقم/مرجع العملية بالأسفل لإرسال طلب التفعيل.</span>
+            </div>
+            <label>رقم/مرجع العملية</label>
+            <input id="paymentRef" class="input" placeholder="اكتب رقم العملية كما ظهر لك">
+            <p class="muted small">بعد الدفع بالطريقة المتفق عليها مع صاحب الموقع، ضع رقم العملية هنا. التفعيل يتم يدويًا من لوحة الإدارة.</p>
+            <button id="requestProBtn" class="btn" style="width:100%">إرسال طلب Pro</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-settings" class="view">
+        <h1>الإعدادات</h1>
+        <div class="card" style="margin-top:18px;max-width:700px">
+          <h2>حسابك</h2>
+          <p>الاسم: <strong id="settingsName">-</strong></p>
+          <p>النوع: <strong id="settingsRole">-</strong></p>
+          <p>الخطة: <strong id="settingsPlan">-</strong></p>
+          <p>Pro حتى: <strong id="settingsProUntil">-</strong></p>
+          <p class="muted small">يمكنك تغيير هذه البيانات لاحقًا من خلال نسخة أوسع من الإعدادات.</p>
+        </div>
+      </section>
+
+      <section id="view-admin" class="view">
+        <div class="row between">
+          <div><h1>لوحة الإدارة 🛡️</h1><p class="muted">إدارة طلبات Pro ومتابعة الموقع.</p></div>
+          <button id="refreshAdminBtn" class="btn secondary">تحديث</button>
+        </div>
+        <div class="grid grid4" style="margin-top:18px">
+          <div class="card stat"><div class="label">المستخدمون</div><div id="adminUsers" class="num">-</div></div>
+          <div class="card stat"><div class="label">طلبات معلقة</div><div id="adminPending" class="num">-</div></div>
+          <div class="card stat"><div class="label">طلبات مقبولة</div><div id="adminApproved" class="num">-</div></div>
+          <div class="card stat"><div class="label">طلبات مرفوضة</div><div id="adminRejected" class="num">-</div></div>
+        </div>
+        <div class="card" style="margin-top:18px">
+          <h2>طلبات Pro</h2>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>المستخدم</th><th>المرجع</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead>
+              <tbody id="adminRequests"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="modalBg" class="modal-bg hidden">
+  <div class="modal">
+    <div class="row between"><h2>إضافة مهمة</h2><button id="closeModal" class="btn secondary">×</button></div>
+    <label>اسم المهمة</label>
+    <input id="taskTitle" class="input" placeholder="مثلاً: مذاكرة العلوم">
+    <label>الأولوية</label>
+    <select id="taskPriority" class="input">
+      <option value="low">منخفضة</option><option value="medium" selected>متوسطة</option><option value="high">عالية</option>
+    </select>
+    <button id="saveTaskBtn" class="btn" style="width:100%;margin-top:16px">حفظ المهمة</button>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const SUPABASE_URL = "https://qtricouqcdeponosxtla.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_KV50THvpo-_f68k2BWpCjg_IzY6jVDK";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+  let profile = null;
+  let tasks = [];
+  let authMode = "login";
+  let selectedRole = "student";
+  let timerSeconds = 1500;
+  let timerInterval = null;
+
+  const $ = id => document.getElementById(id);
+  const toast = (msg, bad=false) => {
+    $("toast").textContent = msg;
+    $("toast").classList.remove("hidden");
+    $("toast").style.borderColor = bad ? "#7a2935" : "#1d4d72";
+    setTimeout(() => $("toast").classList.add("hidden"), 3000);
+  };
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const levelFromXp = xp => Math.floor((Number(xp)||0) / 100) + 1;
+  const xpInLevel = xp => (Number(xp)||0) % 100;
+  const isPro = () => profile?.plan === "pro" && profile?.pro_until && new Date(profile.pro_until) > new Date();
+
+  function setAuthMode(mode){
+    authMode = mode;
+    $("tabLogin").classList.toggle("active", mode === "login");
+    $("tabSignup").classList.toggle("active", mode === "signup");
+    $("signupFields").classList.toggle("hidden", mode !== "signup");
+    $("authBtn").textContent = mode === "login" ? "دخول" : "إنشاء الحساب";
+    $("authMsg").classList.add("hidden");
+  }
+
+  function showAuthMsg(msg, bad=false){
+    $("authMsg").textContent = msg;
+    $("authMsg").className = "notice " + (bad ? "err" : "ok");
+  }
+
+  async function authSubmit(){
+    const email = $("emailInput").value.trim();
+    const password = $("passwordInput").value;
+    if(!email || !password){ showAuthMsg("اكتب البريد وكلمة المرور.", true); return; }
+    if(password.length < 6){ showAuthMsg("كلمة المرور لازم تكون 6 أحرف على الأقل.", true); return; }
+
+    $("authBtn").disabled = true;
+    $("authBtn").textContent = "جاري التنفيذ...";
+    try{
+      if(authMode === "signup"){
+        const name = $("nameInput").value.trim();
+        if(!name){ showAuthMsg("اكتب اسمك.", true); return; }
+        const {data,error} = await supabase.auth.signUp({
+          email,password,
+          options:{data:{name,role:selectedRole}}
+        });
+        if(error) throw error;
+        if(data.session){
+          showAuthMsg("تم إنشاء الحساب وتسجيل الدخول.");
+          await bootUser(data.session.user);
+        }else{
+          showAuthMsg("تم إنشاء الحساب. لو تأكيد البريد الإلكتروني مفعّل في Supabase، افتح بريدك ثم سجّل الدخول.");
+        }
+      }else{
+        const {data,error} = await supabase.auth.signInWithPassword({email,password});
+        if(error) throw error;
+        await bootUser(data.user);
+      }
+    }catch(e){
+      console.error(e);
+      showAuthMsg(e.message || "حصل خطأ غير متوقع.", true);
+    }finally{
+      $("authBtn").disabled = false;
+      $("authBtn").textContent = authMode === "login" ? "دخول" : "إنشاء الحساب";
+    }
+  }
+
+  async function bootUser(user){
+    currentUser = user;
+    const {data,error} = await supabase.from("profiles").select("*").eq("id",user.id).maybeSingle();
+    if(error) throw error;
+    if(!data){
+      // Fallback for projects where the trigger was not created.
+      const role = user.user_metadata?.role === "student" ? "student" : "normal";
+      const {data:created,error:createErr} = await supabase.from("profiles")
+        .insert({id:user.id,name:user.user_metadata?.name || "مستخدم",role})
+        .select().single();
+      if(createErr) throw createErr;
+      profile = created;
+    }else profile = data;
+
+    $("authScreen").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    $("userNameTop").textContent = profile.name || "مستخدم";
+    $("planBadge").textContent = isPro() ? "Pro ⭐" : "Free";
+    $("planBadge").className = "badge " + (isPro() ? "pro" : "");
+    $("adminNav").classList.toggle("hidden", profile.role !== "admin");
+
+    renderProfile();
+    await loadTasks();
+    await loadProStatus();
+    if(profile.role === "admin") await loadAdmin();
+  }
+
+  function renderProfile(){
+    const xp = Number(profile?.xp || 0);
+    const level = levelFromXp(xp);
+    $("xpStat").textContent = xp;
+    $("levelStat").textContent = level;
+    $("levelText").textContent = `${xpInLevel(xp)}/100 XP`;
+    $("xpBar").style.width = xpInLevel(xp) + "%";
+    $("userNameTop").textContent = profile?.name || "مستخدم";
+    $("welcomeTitle").textContent = `أهلاً ${profile?.name || "يا بطل"} 👋`;
+    $("welcomeText").textContent = profile?.role === "student"
+      ? "ركّز في خطوة واحدة دلوقتي، والباقي هييجي وراها."
+      : "رتّب يومك على قد ما تقدر، ومفتاح يساعدك تتابع تقدمك.";
+    $("settingsName").textContent = profile?.name || "-";
+    $("settingsRole").textContent = profile?.role === "student" ? "طالب" : profile?.role === "admin" ? "Admin" : "استخدام شخصي";
+    $("settingsPlan").textContent = isPro() ? "Pro" : "Free";
+    $("settingsProUntil").textContent = profile?.pro_until ? new Date(profile.pro_until).toLocaleString("ar-EG") : "-";
+  }
+
+  async function loadTasks(){
+    const {data,error} = await supabase.from("tasks").select("*").eq("user_id",currentUser.id).order("created_at",{ascending:false});
+    if(error){ toast(error.message,true); return; }
+    tasks = data || [];
+    renderTasks();
+  }
+
+  function renderTasks(){
+    const list = $("tasksList");
+    $("emptyTasks").classList.toggle("hidden", tasks.length > 0);
+    list.innerHTML = tasks.map(t => `
+      <div class="task ${t.completed ? "done" : ""}">
+        <input class="check" type="checkbox" data-complete="${t.id}" ${t.completed ? "checked" : ""}>
+        <div style="flex:1"><div class="task-title">${esc(t.title)}</div><span class="badge">${t.priority==="high"?"عالية":t.priority==="low"?"منخفضة":"متوسطة"}</span></div>
+        <button class="btn red" data-delete="${t.id}">حذف</button>
+      </div>
+    `).join("");
+    $("doneStat").textContent = tasks.filter(t=>t.completed).length;
+    $("leftStat").textContent = tasks.filter(t=>!t.completed).length;
+    const freeLimit = 5;
+    if(!isPro() && tasks.length >= freeLimit){
+      $("taskLimitNotice").className = "notice";
+      $("taskLimitNotice").textContent = `أنت على Free: الحد الحالي ${freeLimit} مهام. فعّل Pro لإزالة الحد.`;
+      $("taskLimitNotice").classList.remove("hidden");
+    }else $("taskLimitNotice").classList.add("hidden");
+  }
+
+  async function saveTask(){
+    const title = $("taskTitle").value.trim();
+    const priority = $("taskPriority").value;
+    if(!title){ toast("اكتب اسم المهمة.",true); return; }
+    if(!isPro() && tasks.length >= 5){ toast("وصلت لحد Free. فعّل Pro لإضافة مهام أكثر.",true); return; }
+    const {data,error} = await supabase.rpc("create_task",{p_title:title,p_priority:priority});
+    if(error){ toast(error.message,true); return; }
+    tasks.unshift(data);
+    renderTasks();
+    closeModal();
+    toast("تمت إضافة المهمة.");
+  }
+
+  async function toggleTask(id, completed){
+    const old = tasks.find(t=>t.id===id);
+    if(!old) return;
+    const {data:result,error} = await supabase.rpc("set_task_completed",{p_task_id:id,p_completed:completed});
+    if(error){ toast(error.message,true); return; }
+    if(completed && !old.completed && result?.xp_awarded){
+      profile.xp = Number(profile.xp||0) + Number(result.xp_awarded);
+    }
+    old.completed = completed;
+    renderTasks(); renderProfile();
+    toast(completed ? "+10 XP 🎉" : "تم إلغاء الإنجاز.");
+  }
+
+  async function deleteTask(id){
+    const {error} = await supabase.from("tasks").delete().eq("id",id).eq("user_id",currentUser.id);
+    if(error){toast(error.message,true);return;}
+    tasks = tasks.filter(t=>t.id!==id);
+    renderTasks(); toast("تم حذف المهمة.");
+  }
+
+  async function loadProStatus(){
+    const {data,error} = await supabase.from("pro_requests").select("*").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(1);
+    if(error){
+      $("proStatusBox").textContent = "شغّل SETUP.sql أولًا لإنشاء نظام Pro.";
+      $("proStatusBox").className = "notice err";
+      return;
+    }
+    if(isPro()){
+      $("proStatusBox").textContent = `حسابك Pro فعال حتى ${new Date(profile.pro_until).toLocaleString("ar-EG")}.`;
+      $("proStatusBox").className = "notice ok";
+    }else if(data?.[0]?.status === "pending"){
+      $("proStatusBox").textContent = "عندك طلب Pro قيد المراجعة.";
+      $("proStatusBox").className = "notice";
+    }else if(data?.[0]?.status === "rejected"){
+      $("proStatusBox").textContent = "آخر طلب Pro تم رفضه. يمكنك إرسال طلب جديد بعد مراجعة رقم العملية.";
+      $("proStatusBox").className = "notice err";
+    }else{
+      $("proStatusBox").textContent = "الخطة الحالية Free.";
+      $("proStatusBox").className = "notice";
+    }
+  }
+
+  async function requestPro(){
+    const reference = $("paymentRef").value.trim();
+    if(!reference){toast("اكتب رقم/مرجع العملية.",true);return;}
+    const {data:pending,error:checkErr} = await supabase.from("pro_requests").select("id").eq("user_id",currentUser.id).eq("status","pending").limit(1);
+    if(checkErr){toast(checkErr.message,true);return;}
+    if(pending?.length){toast("عندك طلب بالفعل قيد المراجعة.",true);return;}
+    const {error} = await supabase.from("pro_requests").insert({user_id:currentUser.id,payment_reference:reference});
+    if(error){toast(error.message,true);return;}
+    $("paymentRef").value="";
+    await loadProStatus();
+    toast("تم إرسال طلب Pro للمراجعة.");
+  }
+
+  async function loadAdmin(){
+    if(profile?.role !== "admin") return;
+    const {data,error} = await supabase.rpc("admin_get_dashboard");
+    if(error){toast("تعذر تحميل لوحة الإدارة: "+error.message,true);return;}
+    $("adminUsers").textContent = data.stats.users;
+    $("adminPending").textContent = data.stats.pending;
+    $("adminApproved").textContent = data.stats.approved;
+    $("adminRejected").textContent = data.stats.rejected;
+    const rows = data.requests || [];
+    $("adminRequests").innerHTML = rows.map(r => `
+      <tr>
+        <td>${esc(r.email || r.name || r.user_id)}</td>
+        <td>${esc(r.payment_reference)}</td>
+        <td>${r.status==="pending"?"⏳ معلّق":r.status==="approved"?"✅ مقبول":"❌ مرفوض"}</td>
+        <td>${new Date(r.created_at).toLocaleString("ar-EG")}</td>
+        <td>
+          ${r.status==="pending" ? `
+            <button class="btn green" data-approve="${r.id}">قبول</button>
+            <button class="btn red" data-reject="${r.id}">رفض</button>
+          ` : "-"}
+        </td>
+      </tr>
+    `).join("") || `<tr><td colspan="5" class="muted">لا توجد طلبات.</td></tr>`;
+  }
+
+  async function reviewRequest(id, action){
+    if(profile?.role !== "admin") return;
+    const {error} = await supabase.rpc("admin_review_pro_request",{p_request_id:id,p_action:action});
+    if(error){toast(error.message,true);return;}
+    toast(action==="approve" ? "تم تفعيل Pro لمدة 30 يوم." : "تم رفض الطلب.");
+    await loadAdmin();
+  }
+
+  function openModal(){ $("modalBg").classList.remove("hidden"); $("taskTitle").focus(); }
+  function closeModal(){ $("modalBg").classList.add("hidden"); $("taskTitle").value=""; }
+
+  function closeMobileMenu(){
+    $(".sidebar")?.classList.remove("open");
+    $("mobileMenuBackdrop")?.classList.remove("show");
+  }
+  function openMobileMenu(){
+    $(".sidebar")?.classList.add("open");
+    $("mobileMenuBackdrop")?.classList.add("show");
+  }
+  function go(view){
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    $("view-"+view).classList.add("active");
+    document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+    closeMobileMenu();
+    if(view==="admin") loadAdmin();
+  }
+
+  function updateTimer(){
+    const m = String(Math.floor(timerSeconds/60)).padStart(2,"0");
+    const s = String(timerSeconds%60).padStart(2,"0");
+    $("timerDisplay").textContent = `${m}:${s}`;
+  }
+  function startTimer(){
+    if(timerInterval) return;
+    $("timerStatus").textContent = "تركيز شغال... 🔥";
+    timerInterval = setInterval(async ()=>{
+      timerSeconds--;
+      updateTimer();
+      if(timerSeconds<=0){
+        clearInterval(timerInterval);timerInterval=null;
+        timerSeconds=1500;updateTimer();
+        $("timerStatus").textContent="خلصت جلسة! 🎉";
+        const {data:reward,error}=await supabase.rpc("claim_focus_xp");
+        if(!error && reward?.awarded){profile.xp=Number(profile.xp||0)+Number(reward.xp_awarded||0);renderProfile();toast("+20 XP لجلسة التركيز 🎉");}
+        else if(!error && !reward?.awarded){toast("جلسة التركيز اكتملت، لكن تم احتساب XP لهذه الفترة بالفعل.");}
+      }
+    },1000);
+  }
+  function pauseTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null;$("timerStatus").textContent="متوقف مؤقتًا.";}}
+  function resetTimer(){pauseTimer();timerSeconds=1500;updateTimer();$("timerStatus").textContent="جلسة جديدة.";}
+
+  // Events: no inline onclick attributes anywhere, so module-scope issues are avoided.
+  $("tabLogin").addEventListener("click",()=>setAuthMode("login"));
+  $("tabSignup").addEventListener("click",()=>setAuthMode("signup"));
+  $("authBtn").addEventListener("click",authSubmit);
+  $("passwordInput").addEventListener("keydown",e=>{if(e.key==="Enter")authSubmit()});
+  document.querySelectorAll("[data-role]").forEach(btn=>btn.addEventListener("click",()=>{
+    selectedRole=btn.dataset.role;
+    document.querySelectorAll("[data-role]").forEach(x=>x.classList.toggle("selected",x===btn));
+  }));
+  document.querySelectorAll(".nav button[data-view]").forEach(btn=>btn.addEventListener("click",()=>go(btn.dataset.view)));
+  $("mobileMenuBtn").addEventListener("click",openMobileMenu);
+  $("mobileMenuBackdrop").addEventListener("click",closeMobileMenu);
+  $("logoutBtn").addEventListener("click",async()=>{await supabase.auth.signOut();location.reload()});
+  $("addTaskBtn").addEventListener("click",openModal);$("quickTaskBtn").addEventListener("click",()=>{go("tasks");openModal()});
+  $("quickTimerBtn").addEventListener("click",()=>go("timer"));
+  $("closeModal").addEventListener("click",closeModal);$("modalBg").addEventListener("click",e=>{if(e.target===$("modalBg"))closeModal()});
+  $("saveTaskBtn").addEventListener("click",saveTask);
+  $("tasksList").addEventListener("change",e=>{if(e.target.dataset.complete)toggleTask(Number(e.target.dataset.complete),e.target.checked)});
+  $("tasksList").addEventListener("click",e=>{if(e.target.dataset.delete)deleteTask(Number(e.target.dataset.delete))});
+  $("requestProBtn").addEventListener("click",requestPro);
+  $("refreshAdminBtn").addEventListener("click",loadAdmin);
+  $("adminRequests").addEventListener("click",e=>{
+    if(e.target.dataset.approve)reviewRequest(e.target.dataset.approve,"approve");
+    if(e.target.dataset.reject)reviewRequest(e.target.dataset.reject,"reject");
+  });
+  $("timerStart").addEventListener("click",startTimer);$("timerPause").addEventListener("click",pauseTimer);$("timerReset").addEventListener("click",resetTimer);
+
+  supabase.auth.onAuthStateChange(async (_event,session)=>{
+    if(session && !currentUser){
+      try{await bootUser(session.user)}catch(e){console.error(e);toast(e.message,true);}
+    }
+  });
+
+  const {data:{session}} = await supabase.auth.getSession();
+  if(session){
+    try{await bootUser(session.user)}catch(e){console.error(e);showAuthMsg(e.message||"تعذر تحميل الحساب.",true);}
+  }
+  updateTimer();
+</script>
+<script id="mobile-menu-fix-js">(function(){function setup(){const b=document.getElementById("mobileMenuButton"),m=document.getElementById("mobileMenu");if(!b||!m)return;function close(){m.classList.remove("is-open");b.setAttribute("aria-expanded","false")}function toggle(e){e.preventDefault();e.stopPropagation();m.classList.toggle("is-open");b.setAttribute("aria-expanded",m.classList.contains("is-open"))}b.addEventListener("click",toggle);m.addEventListener("click",e=>{if(e.target.closest("button,a,[data-section]"))setTimeout(close,0)});document.addEventListener("click",e=>{if(m.classList.contains("is-open")&&!m.contains(e.target)&&e.target!==b)close()})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",setup);else setup()})();</script></body>
+</html>
